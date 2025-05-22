@@ -1,0 +1,52 @@
+version: '3.8'
+services:
+  user-service:
+    build: .
+    container_name: my-user-service-container
+    ports:
+      - "8000:8000"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://user-db:5432/UserServiceDB
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=root
+      - SERVER_PORT=8000
+    depends_on:
+      - user-db
+
+  user-db:
+    image: postgres:latest
+    container_name: user-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: UserServiceDB
+    ports:
+      - "5436:5432"
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.1
+    container_name: keycloak
+    command: start-dev
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_DB=postgres
+      - KC_DB_URL_HOST=keycloak-db
+      - KC_DB_URL_PORT=5432
+      - KC_DB_USERNAME=postgres
+      - KC_DB_PASSWORD=root
+      - KC_DB_DATABASE=keycloak
+    ports:
+      - "8180:8080"
+    depends_on:
+      - keycloak-db
+
+  keycloak-db:
+    image: postgres:latest
+    container_name: keycloak-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: keycloak
+    ports:
+      - "5431:5432"
