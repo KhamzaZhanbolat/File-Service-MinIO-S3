@@ -23,6 +23,7 @@ public class FileController {
         return fileService.upload(file, lessonId);
     }
 
+//??????
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/file/lesson/{lessonId}")
     public List<AttachmentResponse> getByLessonId(@PathVariable Long lessonId) {
